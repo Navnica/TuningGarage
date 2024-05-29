@@ -50,7 +50,7 @@ class ManagerForm(flet.SafeArea):
                 ),
 
                 flet.VerticalDivider(width=20),
-                VehiclePage(visible=True, data='vehicle_page'),
-                ServicePage(visible=False, data='service_page')
+                VehiclePage(visible=False, data='vehicle_page'),
+                ServicePage(visible=True, data='service_page')
             ]
         )
