@@ -1,4 +1,5 @@
 import peewee
+import datetime
 
 database = peewee.SqliteDatabase('database.db')
 
@@ -21,6 +22,7 @@ class UserAuth(BaseModel):
 
 class Vehicle(BaseModel):
     owner_name = peewee.CharField()
+    license_plate = peewee.CharField()
     mark = peewee.CharField()
     model = peewee.CharField()
     year = peewee.CharField()
@@ -32,9 +34,14 @@ class Service(BaseModel):
 
 
 class Order(BaseModel):
-    vehicle = peewee.ForeignKeyField(Vehicle, backref='vehicles')
-    service = peewee.ForeignKeyField(Service, backref='services')
+    vehicle = peewee.ForeignKeyField(Vehicle, backref='orders')
     done = peewee.BooleanField(default=False)
+    created_date = peewee.DateTimeField(default=datetime.datetime.now().replace(second=0, microsecond=0))
+
+
+class ServiceOrder(BaseModel):
+    order = peewee.ForeignKeyField(Order, backref='service_orders')
+    service = peewee.ForeignKeyField(Service, backref='service_orders')
 
 
 class Report(BaseModel):
@@ -53,6 +60,7 @@ database.create_tables([
     Vehicle,
     Service,
     Order,
+    ServiceOrder,
     Report,
     Invoice
 ])

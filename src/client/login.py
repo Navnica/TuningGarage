@@ -1,5 +1,7 @@
 import flet
 from src.database.models import UserAuth
+from src.client.manager import ManagerForm
+from src.client.mechanic import MechanicForm
 
 
 class LoginForm(flet.SafeArea):
@@ -28,8 +30,10 @@ class LoginForm(flet.SafeArea):
             self.page.session.set('user', user_auth.user)
 
             if user_auth.user.role == 'Механик':
-                pass
+                self.page.controls[0].controls.append(MechanicForm(visible=False, data='mechanic'))
+                self.page.session.get('switch_page')('mechanic')
             else:
+                self.page.controls[0].controls.append(ManagerForm(visible=False, data='manager'))
                 self.page.session.get('switch_page')('manager')
 
         self.update()

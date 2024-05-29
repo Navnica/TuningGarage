@@ -8,6 +8,9 @@ class VehiclePage(flet.SafeArea):
             flet.DataRow(
                 cells=[
                     flet.DataCell(
+                        content=flet.Row([flet.Text(vehicle.license_plate)], alignment=flet.MainAxisAlignment.CENTER)
+                    ),
+                    flet.DataCell(
                         content=flet.Row([flet.Text(vehicle.owner_name)], alignment=flet.MainAxisAlignment.CENTER)
                     ),
                     flet.DataCell(
@@ -53,6 +56,15 @@ class VehiclePage(flet.SafeArea):
                         alignment=flet.MainAxisAlignment.START,
                         horizontal_alignment=flet.CrossAxisAlignment.CENTER,
                         controls=[
+                            flet.Row(
+                                alignment=flet.MainAxisAlignment.CENTER,
+                                controls=[
+                                    flet.TextField(
+                                        label='Гос. номер',
+                                        value=vehicle.license_plate
+                                    )
+                                ]
+                            ),
                             flet.Row(
                                 alignment=flet.MainAxisAlignment.CENTER,
                                 controls=[
@@ -124,8 +136,8 @@ class VehiclePage(flet.SafeArea):
     def update_main_info(self):
         self.content.controls[0].content.controls[0].value = 'На данный момент числится ' + str(
             len(Vehicle.select())) + ' ТС.'
-        self.content.controls[0].content.controls[1].value = 'Заказы действуют для ' + str(
-            len(Order.select().where(Order.done != True))) + ' из них.'
+        self.content.controls[0].content.controls[1].value = 'На данный момент имеется ' + str(
+            len(Order.select().where(Order.done != True))) + ' активных заказов.'
         self.update()
 
     def on_vehicle_create_click(self, event: flet.ControlEvent, update=False): # Используется также для обновления
@@ -150,7 +162,8 @@ class VehiclePage(flet.SafeArea):
             return
 
         if not update:
-            new_vehicle = Vehicle.create(
+            Vehicle.create(
+                license_plate=text_fields['Гос. номер'].value,
                 owner_name=text_fields['ФИО Владельца'].value,
                 mark=text_fields['Марка ТС'].value,
                 model=text_fields['Модель ТС'].value,
@@ -159,6 +172,7 @@ class VehiclePage(flet.SafeArea):
         else:
             vehicle: Vehicle = Vehicle.get(Vehicle.id == event.control.data)
             vehicle.update(
+                license_plate=text_fields['Гос. номер'].value,
                 owner_name=text_fields['ФИО Владельца'].value,
                 mark=text_fields['Марка ТС'].value,
                 model=text_fields['Модель ТС'].value,
@@ -181,6 +195,14 @@ class VehiclePage(flet.SafeArea):
                         alignment=flet.MainAxisAlignment.START,
                         horizontal_alignment=flet.CrossAxisAlignment.CENTER,
                         controls=[
+                            flet.Row(
+                                alignment=flet.MainAxisAlignment.CENTER,
+                                controls=[
+                                    flet.TextField(
+                                        label='Гос. номер',
+                                    )
+                                ]
+                            ),
                             flet.Row(
                                 alignment=flet.MainAxisAlignment.CENTER,
                                 controls=[
@@ -216,6 +238,10 @@ class VehiclePage(flet.SafeArea):
 
         self.page.update()
 
+    def on_update_click(self, event: flet.ControlEvent):
+        self.update_main_info()
+        self.update_data_table()
+
     def build(self):
         self.expand = True
         self.content = flet.Column(
@@ -232,21 +258,33 @@ class VehiclePage(flet.SafeArea):
                                 value='На данный момент числится ' + str(len(Vehicle.select())) + ' ТС.'
                             ),
                             flet.Text(
-                                value='Заказы действуют для ' + str(
-                                    len(Order.select().where(Order.done == True))) + ' из них.'),
+                                value='На данный момент имеется ' + str(
+                                    len(Order.select().where(Order.done != True))) + ' активных заказов.'),
                         ]
                     )
                 ),
                 flet.Divider(height=10),
-                flet.FilledButton(
-                    icon=flet.icons.ADD,
-                    text='Добавить ТС',
-                    on_click=self.on_vehicle_add_click
+                flet.Row(
+                    alignment=flet.MainAxisAlignment.CENTER,
+                    controls=[
+                        flet.FilledButton(
+                            icon=flet.icons.ADD,
+                            text='Добавить ТС',
+                            on_click=self.on_vehicle_add_click
+                        ),
+                        flet.TextButton(
+                            icon=flet.icons.AUTORENEW,
+                            text='Обновить',
+                            on_click=self.on_update_click
+                        )
+                    ]
                 ),
+
                 flet.DataTable(
                     expand=True,
 
                     columns=[
+                        flet.DataColumn(label=flet.Text('Гос. номер')),
                         flet.DataColumn(label=flet.Text('Владелец')),
                         flet.DataColumn(label=flet.Text('Марка')),
                         flet.DataColumn(label=flet.Text('Модель')),

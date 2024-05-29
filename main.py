@@ -22,7 +22,6 @@ def main(page: flet.Page):
             controls=[
                 LoginForm(data='login'),
                 RegisterForm(visible=False, data='register'),
-                ManagerForm(visible=False, data='manager')
             ]
         )
     )

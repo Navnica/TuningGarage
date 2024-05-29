@@ -12,7 +12,6 @@ class ServicePage(flet.SafeArea):
                 else:
                     price_text_field.error_text = 'Поле пусто'
                     price_text_field.update()
-
             else:
                 name_text_field.error_text = ''
                 price_text_field.error_text = ''
@@ -25,17 +24,11 @@ class ServicePage(flet.SafeArea):
                 )
 
                 self.page.overlay[-1].open = False
-                self.update_data_table()
+                self.update_service_list()
                 self.page.update()
 
-
-
-        name_text_field = flet.TextField(
-            label='Название'
-        )
-        price_text_field = flet.TextField(
-            label='Цена'
-        )
+        name_text_field = flet.TextField(label='Название')
+        price_text_field = flet.TextField(label='Цена')
 
         self.page.overlay.clear()
         self.page.overlay.append(
@@ -51,9 +44,9 @@ class ServicePage(flet.SafeArea):
                                 controls=[
                                     name_text_field,
                                     price_text_field
-                                ]
+                                ],
+                                spacing=10
                             ),
-
                             flet.FilledButton(
                                 text='Сохранить',
                                 on_click=on_save_click
@@ -69,9 +62,7 @@ class ServicePage(flet.SafeArea):
     def on_service_delete_click(self, event: flet.ControlEvent):
         def on_yes(event: flet.ControlEvent):
             Service.get(Service.id == event.control.data).delete_instance()
-
-            self.update_data_table()
-
+            self.update_service_list()
             self.page.dialog.open = False
             self.page.update()
 
@@ -89,62 +80,59 @@ class ServicePage(flet.SafeArea):
         )
         self.page.update()
 
-    def update_data_table(self):
-        self.content.controls[3].rows = self.get_services_data_rows()
+    def update_service_list(self):
+        self.service_list.controls = self.get_service_cards()
+        self.service_list.update()
 
-    def get_services_data_rows(self) -> list[flet.DataRow]:
+    def get_service_cards(self) -> list[flet.Control]:
         return [
-            flet.DataRow(
-                cells=[
-                    flet.DataCell(
-                        content=flet.Row([flet.Text(service.name)], alignment=flet.MainAxisAlignment.CENTER)
-                    ),
-                    flet.DataCell(
-                        content=flet.Row([flet.Text(service.price)], alignment=flet.MainAxisAlignment.CENTER)
-                    ),
-                    flet.DataCell(
-                        content=flet.Row([
-                            flet.IconButton(
-                                icon=flet.icons.DELETE,
-                                on_click=self.on_service_delete_click,
-                                data=service.id
+            flet.Card(
+                content=flet.Container(
+                    padding=15,
+                    content=flet.Row(
+                        controls=[
+                            flet.Column(
+                                expand=True,
+                                controls=[
+                                    flet.Text(value='Услуга: ' + service.name),
+                                    flet.Text(value=f'Цена: {service.price}₽'),
+                                ]
+                            ),
+
+                            flet.Column(
+                                alignment=flet.MainAxisAlignment.CENTER,
+                                controls=[
+                                    flet.IconButton(
+                                        icon=flet.icons.DELETE,
+                                        on_click=self.on_service_delete_click,
+                                        data=service.id
+                                    )
+                                ]
                             )
-                        ], alignment=flet.MainAxisAlignment.CENTER)
-                    ),
-                ]
+                        ]
+                    )
+                ),
             ) for service in Service.select()
         ]
 
     def build(self):
         self.expand = True
+        self.service_list = flet.Column(
+            spacing=10,
+            expand=True,
+            controls=self.get_service_cards()
+        )
         self.content = flet.Column(
             horizontal_alignment=flet.CrossAxisAlignment.CENTER,
             controls=[
-                flet.Text(
-                    value='Доступные услуги'
-                ),
-                flet.Divider(
-                    height=20
-                ),
+                flet.Text(value='Доступные услуги'),
+                flet.Divider(height=20),
                 flet.FilledButton(
                     text='Новая',
                     icon=flet.icons.ADD,
                     on_click=self.on_service_add_click
                 ),
-
-                flet.DataTable(
-                    columns=[
-                        flet.DataColumn(
-                            label=flet.Text(value='Название')
-                        ),
-                        flet.DataColumn(
-                            label=flet.Text(value='Цена')
-                        ),
-                        flet.DataColumn(
-                            label=flet.Text(value='Управление')
-                        )
-                    ],
-                    rows=self.get_services_data_rows()
-                )
+                self.service_list
             ],
         )
+
