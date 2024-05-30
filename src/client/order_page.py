@@ -72,6 +72,8 @@ class OrderPage(flet.SafeArea):
                             value='Выполнен' if order.done else 'Активен',
                             color=flet.colors.WHITE,
                             size=12,
+                            width=80,
+                            text_align=flet.TextAlign.CENTER
                         ),
                     ),
                     trailing=flet.TextButton(

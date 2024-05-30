@@ -2,6 +2,7 @@ import flet
 from src.client.veihcle_page import VehiclePage
 from src.client.service_page import ServicePage
 from src.client.order_page import OrderPage
+from src.client.report_page import ReportPage
 
 
 class ManagerForm(flet.SafeArea):
@@ -9,7 +10,8 @@ class ManagerForm(flet.SafeArea):
         pages = [
             'vehicle_page',
             'service_page',
-            'order_page'
+            'order_page',
+            'report_page'
         ]
         page_name = pages[int(event.data)]
 
@@ -58,6 +60,7 @@ class ManagerForm(flet.SafeArea):
                 VehiclePage(visible=True, data='vehicle_page'),
                 ServicePage(visible=False, data='service_page'),
                 OrderPage(visible=False, data='order_page'),
+                ReportPage(visible=False, data='report_page')
             ]
         )
 

@@ -36,7 +36,7 @@ class Service(BaseModel):
 class Order(BaseModel):
     vehicle = peewee.ForeignKeyField(Vehicle, backref='orders')
     done = peewee.BooleanField(default=False)
-    created_date = peewee.DateTimeField(default=datetime.datetime.now().replace(second=0, microsecond=0))
+    created_date = peewee.DateTimeField(default=lambda: datetime.datetime.now().replace(second=0, microsecond=0))
 
 
 class ServiceOrder(BaseModel):
@@ -46,6 +46,8 @@ class ServiceOrder(BaseModel):
 
 class Report(BaseModel):
     from_user = peewee.ForeignKeyField(User, backref='reports')
+    created_date = peewee.DateTimeField(default=lambda: datetime.datetime.now().replace(second=0, microsecond=0))
+    title = peewee.CharField()
     text = peewee.TextField()
 
 

@@ -1,12 +1,15 @@
 import flet
 from src.client.veihcle_page import VehiclePage
+from src.client.active_orders_page import ActiveOrdersPage
+from src.client.new_report_form import NewReportForm
 
 
 class MechanicForm(flet.SafeArea):
     def switch_page(self, event: flet.ControlEvent):
         pages = [
             'vehicle_page',
-            'report_page',
+            'active_orders_page',
+            'new_report_page',
         ]
         page_name = pages[int(event.data)]
 
@@ -36,6 +39,10 @@ class MechanicForm(flet.SafeArea):
                                 icon=flet.icons.DIRECTIONS_CAR,
                             ),
                             flet.NavigationRailDestination(
+                                label='Активные заказы',
+                                icon=flet.icons.ASSIGNMENT
+                            ),
+                            flet.NavigationRailDestination(
                                 label="Создание отчётов",
                                 icon=flet.icons.ASSIGNMENT,
                             ),
@@ -45,5 +52,7 @@ class MechanicForm(flet.SafeArea):
 
                 flet.VerticalDivider(width=20),
                 VehiclePage(visible=True, data='vehicle_page'),
+                ActiveOrdersPage(visible=False, data='active_orders_page'),
+                NewReportForm(visible=False, data='new_report_page')
             ]
         )
